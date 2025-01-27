@@ -9,5 +9,83 @@
 <body>
   <!-- Include the script that builds the page and powers Decap CMS -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script>
+    // Function to load repository folders
+    async function loadRepoFolders() {
+      try {
+        const response = await fetch('https://api.github.com/repos/KoalbyMQP/Documentation/contents/docs');
+        const files = await response.json();
+        window.repoFiles = {
+          docs: files.reduce((acc, file) => {
+            if (file.type === 'dir') {
+              acc[file.name] = true;
+            }
+            return acc;
+          }, {})
+        };
+        // Force re-render of any folder-select widgets
+        const event = new Event('folders-loaded');
+        window.dispatchEvent(event);
+      } catch (error) {
+        console.error('Error loading repo files:', error);
+      }
+    }
+
+    // Custom widget for dynamic folder selection
+    const FolderControl = createClass({
+      componentDidMount() {
+        // Load folders when component mounts if not already loaded
+        if (!window.repoFiles) {
+          loadRepoFolders();
+        }
+        // Listen for folder updates
+        window.addEventListener('folders-loaded', () => this.forceUpdate());
+      },
+
+      handleChange: function(e) {
+        this.props.onChange(e.target.value);
+      },
+
+      render: function() {
+        const folders = [''].concat(
+          Object.keys(((window.repoFiles || {}).docs || {}))
+            .sort()
+        );
+        
+        return h('select', {
+          value: this.props.value || '',
+          onChange: this.handleChange,
+          className: 'folder-select',
+        }, folders.map(folder => 
+          h('option', { value: folder }, folder || '(root)')
+        ));
+      }
+    });
+
+    const FolderPreview = createClass({
+      render: function() {
+        return h('div', {}, this.props.value || '(root)');
+      }
+    });
+
+    // Register the custom widget
+    CMS.registerWidget('folder-select', FolderControl, FolderPreview);
+
+    // Load folders when CMS initializes
+    CMS.registerEventListener({
+      name: 'init',
+      handler: () => {
+        loadRepoFolders();
+      }
+    });
+
+    // Reload folders after saving
+    CMS.registerEventListener({
+      name: 'afterSubmit',
+      handler: () => {
+        setTimeout(loadRepoFolders, 1000); // Wait a bit for GitHub to update
+      }
+    });
+  </script>
 </body>
 </html>

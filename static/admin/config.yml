@@ -3,9 +3,8 @@ backend:
   branch: main
   repo: KoalbyMQP/Documentation
 
-# These lines should *not* be indented
-media_folder: "static/img" 
-public_folder: "/img/" 
+media_folder: "static/img"
+public_folder: "/img/"
 
 collections:
   - name: docs
@@ -14,11 +13,17 @@ collections:
     identifier_field: title
     extension: md
     create: true
-    slug: "{{slug}}"
+    path: "{{folder}}/{{slug}}"
     fields:
+      - name: folder
+        label: Folder Path
+        widget: folder-select
+        hint: "Select a folder or leave empty for root level"
+        required: false
       - name: id
         label: ID
         widget: string
+        hint: "Unique identifier for the document (e.g., 'intro' or 'tutorial-basics/create-page')"
       - name: title
         label: Title
         widget: string
@@ -30,6 +35,7 @@ collections:
         label: Sidebar Position
         widget: number
         required: false
+        value_type: int
       - name: body
         label: Content
         widget: markdown
@@ -37,3 +43,34 @@ collections:
         label: Tags
         widget: list
         required: false
+
+  - name: category
+    label: Documentation Categories
+    folder: docs
+    create: true
+    identifier_field: label
+    format: json
+    extension: json
+    path: "{{slug}}/_category_"
+    slug: "{{label}}"
+    fields:
+      - name: label
+        label: Category Label
+        widget: string
+        hint: "This will be both the folder name and display name"
+      - name: position
+        label: Position
+        widget: number
+        value_type: int
+        hint: "Order in the sidebar (lower numbers appear first)"
+      - name: type
+        label: Category Type
+        widget: select
+        options: ["generated-index", "doc"]
+        default: "generated-index"
+        hint: "Usually leave as generated-index"
+      - name: id
+        label: Document ID
+        widget: string
+        required: false
+        hint: "Only needed if type is 'doc'"
