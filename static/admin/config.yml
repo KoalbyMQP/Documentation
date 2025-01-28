@@ -21,10 +21,11 @@ collections:
     identifier_field: label
     format: json
     extension: json
-    slug: "{{slug}}/_category_"
-    path: "{{folder}}/_category_"
+    slug: "{{fields.slug}}/_category_"
+    path: "{{fields.slug}}/_category_"
     fields:
-      - {label: "Label", name: "label", widget: "string"}
+      - {label: "Label", name: "label", widget: "string", pattern: ["^[a-z0-9- ]+$", "Only lowercase letters, numbers, spaces and dashes"]}
+      - {label: "Slug", name: "slug", widget: "string", pattern: ["^[a-z0-9-]+$", "Only lowercase letters, numbers and dashes"]}
       - {label: "Position", name: "position", widget: "number", value_type: "int"}
       - {
           label: "Parent Category",
