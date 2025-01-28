@@ -42,7 +42,9 @@ collections:
           name: "type",
           widget: "select",
           options: ["generated-index", "doc"],
-          default: "generated-index"
+          default: "generated-index",
+          required: false,
+          hint: "Only use 'doc' type if you need to link to an existing document"
         }
 
   - name: documents
