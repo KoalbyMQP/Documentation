@@ -2,82 +2,52 @@ backend:
   name: github
   branch: main
   repo: KoalbyMQP/Documentation
-  commit_messages:
-    create: "docs: create {{collection}} '{{slug}}'"
-    update: "docs: update {{collection}} '{{slug}}'"
-    delete: "docs: delete {{collection}} '{{slug}}'"
-    uploadMedia: "docs: upload media file '{{path}}'"
-    deleteMedia: "docs: delete media file '{{path}}'"
 
 media_folder: "static/img"
 public_folder: "/img/"
 
 collections:
-  - name: categories
-    label: Categories
-    label_singular: "Category"
+  - name: "docs"
+    label: "Documentation"
     folder: "docs/"
     create: true
-    identifier_field: label
-    format: json
-    extension: json
-    slug: "{% if fields.parent %}{{fields.parent}}/{% endif %}{{fields.slug}}/_category_"
-    path: "{% if fields.parent %}{{fields.parent}}/{% endif %}{{fields.slug}}/_category_"
+    delete: true
+    identifier_field: "id"
+    slug: "{{slug}}"
+    path: "{{slug}}/index"
+    editor:
+      preview: false
+    nested:
+      depth: 100  # Allow infinite nesting
+    filter:
+      field: "folder"
+      value: "docs"
     fields:
-      - {label: "Label", name: "label", widget: "string", pattern: ["^[a-z0-9- ]+$", "Only lowercase letters, numbers, spaces and dashes"]}
-      - {label: "Slug", name: "slug", widget: "string", pattern: ["^[a-z][a-z0-9-]*$", "Must start with a letter and contain only lowercase letters, numbers and dashes"]}
-      - {label: "Position", name: "position", widget: "number", value_type: "int"}
-      - {
-          label: "Parent Category",
-          name: "parent",
-          widget: "relation",
-          collection: "categories",
-          search_fields: ["label"],
-          value_field: "slug",
-          required: false,
-          hint: "Select parent category (will create nested folder)"
-        }
-      - {
-          label: "Category Type",
-          name: "type",
-          widget: "select",
-          options: ["generated-index", "doc"],
-          default: "generated-index",
-          required: false,
-          hint: "Only use 'doc' type if you need to link to an existing document"
-        }
-
-  - name: documents
-    label: Documents
-    label_singular: "Document"
-    folder: "docs/"
-    create: true
-    extension: md
-    format: frontmatter
-    identifier_field: id
-    path: "{{folder}}/{{slug}}"
-    slug: "{{fields.slug}}"
-    fields:
-      - {label: "ID", name: "id", widget: "string"}
       - {label: "Title", name: "title", widget: "string"}
-      - {
-          label: "Folder Path",
-          name: "folder",
-          widget: "folder-select",
-          hint: "Select or create folder path (e.g. 'tutorial-basics')",
-          default: ""
-        }
-      - {label: "Slug", name: "slug", widget: "string", pattern: ["^[a-z0-9-/]+$", "Only lowercase letters, numbers, and dashes"]}
-      - {label: "Sidebar Label", name: "sidebar_label", widget: "string", required: false}
-      - {label: "Sidebar Position", name: "sidebar_position", widget: "number", value_type: "int", required: false}
-      - {
-          label: "Parent Category",
-          name: "parent_category",
-          widget: "relation",
-          collection: "categories",
-          search_fields: ["label"],
-          value_field: "label",
-          required: false
-        }
-      - {label: "Body", name: "body", widget: "markdown"}
-      - {label: "Tags", name: "tags", widget: "list", required: false}
+      - {label: "Folder", name: "folder", widget: "hidden", default: "docs"}
+      - {label: "Position", name: "sidebar_position", widget: "number", default: 0}
+      - label: "Content"
+        name: "body"
+        widget: "markdown"
+        buttons: ["bold", "italic", "link", "quote", "code", "bulleted-list", "numbered-list"]
+        editorComponents: ["image"]
+        modes: ["rich_text"]
+        hint: "Start with ## Section Heading for sub-sections"
+    
+  - name: "sections"
+    label: "Sections"
+    label_singular: "Section"
+    folder: "docs/"
+    create: true
+    delete: true
+    identifier_field: "id"
+    slug: "{{slug}}"
+    path: "{{slug}}/_category_"
+    editor:
+      preview: false
+    fields:
+      - {label: "Section Title", name: "label", widget: "string"}
+      - {label: "Position", name: "position", widget: "number", default: 0}
+      - {label: "Collapsible", name: "collapsed", widget: "boolean", default: false}
+      - {label: "Folder Name", name: "id", widget: "string", pattern: ["^[a-z0-9]+(?:-[a-z0-9]+)*$", "Only lowercase letters, numbers, and hyphens"]}
+      - {label: "Description", name: "description", widget: "text", required: false}
