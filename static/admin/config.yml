@@ -21,11 +21,11 @@ collections:
     identifier_field: label
     format: json
     extension: json
-    slug: "{{fields.slug}}/_category_"
-    path: "{{fields.slug}}/_category_"
+    slug: "{% if fields.parent %}{{fields.parent}}/{% endif %}{{fields.slug}}/_category_"
+    path: "{% if fields.parent %}{{fields.parent}}/{% endif %}{{fields.slug}}/_category_"
     fields:
       - {label: "Label", name: "label", widget: "string", pattern: ["^[a-z0-9- ]+$", "Only lowercase letters, numbers, spaces and dashes"]}
-      - {label: "Slug", name: "slug", widget: "string", pattern: ["^[a-z0-9-]+$", "Only lowercase letters, numbers and dashes"]}
+      - {label: "Slug", name: "slug", widget: "string", pattern: ["^[a-z][a-z0-9-]*$", "Must start with a letter and contain only lowercase letters, numbers and dashes"]}
       - {label: "Position", name: "position", widget: "number", value_type: "int"}
       - {
           label: "Parent Category",
@@ -33,8 +33,9 @@ collections:
           widget: "relation",
           collection: "categories",
           search_fields: ["label"],
-          value_field: "label",
-          required: false
+          value_field: "slug",
+          required: false,
+          hint: "Select parent category (will create nested folder)"
         }
       - {
           label: "Category Type",
