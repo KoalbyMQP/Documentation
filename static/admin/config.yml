@@ -2,75 +2,78 @@ backend:
   name: github
   branch: main
   repo: KoalbyMQP/Documentation
+  commit_messages:
+    create: "docs: create {{collection}} '{{slug}}'"
+    update: "docs: update {{collection}} '{{slug}}'"
+    delete: "docs: delete {{collection}} '{{slug}}'"
+    uploadMedia: "docs: upload media file '{{path}}'"
+    deleteMedia: "docs: delete media file '{{path}}'"
 
 media_folder: "static/img"
 public_folder: "/img/"
 
 collections:
-  - name: docs
-    label: Documentation
-    folder: docs
-    identifier_field: title
-    extension: md
-    create: true
-    path: "{{folder}}/{{slug}}"
-    fields:
-      - name: folder
-        label: Folder Path
-        widget: folder-select
-        hint: "Select a folder or leave empty for root level"
-        required: false
-      - name: id
-        label: ID
-        widget: string
-        hint: "Unique identifier for the document (e.g., 'intro' or 'tutorial-basics/create-page')"
-      - name: title
-        label: Title
-        widget: string
-      - name: sidebar_label
-        label: Sidebar Label
-        widget: string
-        required: false
-      - name: sidebar_position
-        label: Sidebar Position
-        widget: number
-        required: false
-        value_type: int
-      - name: body
-        label: Content
-        widget: markdown
-      - name: tags
-        label: Tags
-        widget: list
-        required: false
-
-  - name: category
-    label: Documentation Categories
-    folder: docs
+  - name: categories
+    label: Categories
+    label_singular: "Category"
+    folder: "docs/"
     create: true
     identifier_field: label
     format: json
     extension: json
-    path: "{{slug}}/_category_"
-    slug: "{{label}}"
+    slug: "{{slug}}/_category_"
+    path: "{{folder}}/_category_"
     fields:
-      - name: label
-        label: Category Label
-        widget: string
-        hint: "This will be both the folder name and display name"
-      - name: position
-        label: Position
-        widget: number
-        value_type: int
-        hint: "Order in the sidebar (lower numbers appear first)"
-      - name: type
-        label: Category Type
-        widget: select
-        options: ["generated-index", "doc"]
-        default: "generated-index"
-        hint: "Usually leave as generated-index"
-      - name: id
-        label: Document ID
-        widget: string
-        required: false
-        hint: "Only needed if type is 'doc'"
+      - {label: "Label", name: "label", widget: "string"}
+      - {label: "Position", name: "position", widget: "number", value_type: "int"}
+      - {
+          label: "Parent Category",
+          name: "parent",
+          widget: "relation",
+          collection: "categories",
+          search_fields: ["label"],
+          value_field: "label",
+          required: false
+        }
+      - {
+          label: "Category Type",
+          name: "type",
+          widget: "select",
+          options: ["generated-index", "doc"],
+          default: "generated-index"
+        }
+
+  - name: documents
+    label: Documents
+    label_singular: "Document"
+    folder: "docs/"
+    create: true
+    extension: md
+    format: frontmatter
+    identifier_field: id
+    path: "{{folder}}/{{slug}}"
+    slug: "{{fields.slug}}"
+    fields:
+      - {label: "ID", name: "id", widget: "string"}
+      - {label: "Title", name: "title", widget: "string"}
+      - {
+          label: "Folder Path",
+          name: "folder",
+          widget: "folder-select",
+          hint: "Select or create folder path (e.g. 'tutorial-basics')",
+          default: ""
+        }
+      - {label: "Slug", name: "slug", widget: "string", pattern: ["^[a-z0-9-/]+$", "Only lowercase letters, numbers, and dashes"]}
+      - {label: "Sidebar Label", name: "sidebar_label", widget: "string", required: false}
+      - {label: "Sidebar Position", name: "sidebar_position", widget: "number", value_type: "int", required: false}
+      - {
+          label: "Parent Category",
+          name: "parent_category",
+          widget: "relation",
+          collection: "categories",
+          search_fields: ["label"],
+          value_field: "label",
+          required: false
+        }
+      - {label: "Body", name: "body", widget: "markdown"}
+      - {label: "Tags", name: "tags", widget: "list", required: false}
