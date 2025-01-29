@@ -6,48 +6,79 @@ backend:
 media_folder: "static/img"
 public_folder: "/img/"
 
+slug:
+  encoding: "ascii"
+  clean_accents: true
+  sanitize_replacement: "-"
+
 collections:
-  - name: "docs"
-    label: "Documentation"
-    folder: "docs/"
+  - name: sections
+    label: Documentation Sections
+    folder: docs
     create: true
-    delete: true
-    identifier_field: "id"
-    slug: "{{slug}}"
-    path: "{{slug}}/index"
-    editor:
-      preview: false
+    format: json
+    extension: json
+    path: "{{label}}/_category_"
+    fields:
+      - name: label
+        label: Section Name
+        widget: string
+        hint: "Name of the new section/folder - this will be the folder name"
+        pattern: ['^[a-zA-Z0-9-]+$', "Only letters, numbers, and hyphens are allowed"]
+      - name: position
+        label: Position
+        widget: number
+        value_type: int
+        hint: "Order in the sidebar (lower numbers first)"
+      - name: type
+        label: Section Type
+        widget: select
+        options: ["generated-index", "doc"]
+        default: "generated-index"
+        hint: "Usually keep as generated-index"
+
+  - name: pages
+    label: Documentation Pages
+    folder: docs
+    create: true
+    format: frontmatter
+    extension: md
     nested:
-      depth: 100  # Allow infinite nesting
-    filter:
-      field: "folder"
-      value: "docs"
+      depth: 100
+      summary: '{{title}}'
+    path: "{{dirname}}/{{slug}}"
     fields:
-      - {label: "Title", name: "title", widget: "string"}
-      - {label: "Folder", name: "folder", widget: "hidden", default: "docs"}
-      - {label: "Position", name: "sidebar_position", widget: "number", default: 0}
-      - label: "Content"
-        name: "body"
-        widget: "markdown"
-        buttons: ["bold", "italic", "link", "quote", "code", "bulleted-list", "numbered-list"]
-        editorComponents: ["image"]
-        modes: ["rich_text"]
-        hint: "Start with ## Section Heading for sub-sections"
-    
-  - name: "sections"
-    label: "Sections"
-    label_singular: "Section"
-    folder: "docs/"
-    create: true
-    delete: true
-    identifier_field: "id"
-    slug: "{{slug}}"
-    path: "{{slug}}/_category_"
-    editor:
-      preview: false
-    fields:
-      - {label: "Section Title", name: "label", widget: "string"}
-      - {label: "Position", name: "position", widget: "number", default: 0}
-      - {label: "Collapsible", name: "collapsed", widget: "boolean", default: false}
-      - {label: "Folder Name", name: "id", widget: "string", pattern: ["^[a-z0-9]+(?:-[a-z0-9]+)*$", "Only lowercase letters, numbers, and hyphens"]}
-      - {label: "Description", name: "description", widget: "text", required: false}
+      - name: dirname
+        label: Section/Folder
+        widget: string
+        hint: "The folder path where this page should be created (e.g., 'tutorial-basics' or leave empty for root)"
+      - name: title
+        label: Page Title
+        widget: string
+      - name: slug
+        label: URL Slug
+        widget: string
+        pattern: ['^[a-zA-Z0-9-]+$', "Only letters, numbers, and hyphens are allowed"]
+        hint: "The URL-friendly version of the title (e.g., 'deploy-your-site')"
+      - name: sidebar_position
+        label: Page Position
+        widget: number
+        required: false
+        value_type: int
+        hint: "Order within the section (lower numbers first)"
+      - name: id
+        label: Page ID
+        widget: string
+        hint: "Unique identifier (e.g., 'intro' or 'installation')"
+      - name: description
+        label: Description
+        widget: string
+        required: false
+        hint: "Brief description of the page content"
+      - name: tags
+        label: Tags
+        widget: list
+        required: false
+      - name: body
+        label: Content
+        widget: markdown
