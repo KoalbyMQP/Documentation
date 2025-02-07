@@ -60,10 +60,12 @@ const config = {
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        title: 'My Site',
+        hideOnScroll: false,
+        title: 'Humanoid Robot MQP',
         logo: {
-          alt: 'My Site Logo',
-          src: 'img/logo.svg',
+          alt: 'WPI Robot Logo',
+          src: 'assets/logo.png',
+          srcDark: 'assets/logo_dark.png',
         },
         items: [
           {
@@ -73,9 +75,24 @@ const config = {
             label: 'Documentation',
           },
           {
-            href: 'https://github.com/facebook/docusaurus',
-            label: 'GitHub',
+            to: '/docs/sections/vision',
+            label: 'Vision System',
+            position: 'left',
+          },
+          {
+            to: '/docs/sections/urdf',
+            label: 'URDF',
+            position: 'left',
+          },
+          {
+            type: 'search',
             position: 'right',
+          },
+          {
+            href: 'https://github.com/KoalbyMQP',
+            position: 'right',
+            className: 'header-github-link',
+            'aria-label': 'GitHub repository',
           },
         ],
       },
@@ -83,42 +100,46 @@ const config = {
         style: 'dark',
         links: [
           {
-            title: 'Docs',
+            title: 'Documentation',
             items: [
               {
-                label: 'Tutorial',
-                to: '/docs/documentation-tutorial/intro',
+                label: 'Vision System',
+                to: '/docs/sections/vision',
+              },
+              {
+                label: 'URDF',
+                to: '/docs/sections/urdf',
+              },
+              {
+                label: 'Performance',
+                to: '/docs/sections/performance-monitoring',
               },
             ],
           },
           {
-            title: 'Community',
+            title: 'Project',
             items: [
               {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-              },
-              {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
-              },
-              {
-                label: 'X',
-                href: 'https://x.com/docusaurus',
+                label: 'About MQP',
+                href: 'https://www.wpi.edu/academics/undergraduate/major-qualifying-project',
               },
             ],
           },
           {
-            title: 'More',
+            title: 'Resources',
             items: [
               {
                 label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
+                href: 'https://github.com/KoalbyMQP',
+              },
+              {
+                label: 'Project Updates',
+                href: 'https://github.com/KoalbyMQP/Documentation/releases',
               },
             ],
           },
         ],
-        copyright: `Copyright ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} WPI Humanoid Robot MQP. Built with Docusaurus.`,
       },
       prism: {
         theme: prismThemes.github,
