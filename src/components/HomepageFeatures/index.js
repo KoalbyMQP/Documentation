@@ -32,7 +32,7 @@ function Feature({ title, description, tags, index }) {
       <div className={clsx(styles.featureContainer, { [styles.reverse]: isReverse })}>
         <div className={styles.featureCard}>
           <div className={styles.titleWrapper}>
-            <Heading as="h3">{title}</Heading>
+            <Heading as="h2">{title}</Heading>
             <span className={styles.arrow}>→</span>
           </div>
           <p>{description}</p>

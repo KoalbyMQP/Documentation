@@ -27,7 +27,11 @@ function HeroSection() {
         </div>
       </div>
       <div className={styles.heroImage}>
-        <img src="/assets/hello.gif" alt="Robot waving hello" className={styles.robotAnimation} />
+        <video autoPlay loop muted playsInline className={styles.robotAnimation}>
+          <source src="/assets/hello.webm" type="video/webm" />
+          <source src="/assets/hello.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       </div>
     </div>
   );

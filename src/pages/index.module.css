@@ -1,14 +1,8 @@
-/**
- * CSS files with the .module.css suffix will be treated as CSS modules
- * and scoped locally.
- */
-
 .main {
   width: 100%;
   min-height: 100vh;
   background: var(--ifm-background-color);
 }
-
 .hero {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
@@ -18,29 +12,30 @@
   margin: 0 auto;
   align-items: center;
 }
-
 .heroInner {
   position: relative;
 }
-
 .heroTitle {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
   font-size: clamp(2.5rem, 5vw, 4rem);
   line-height: 1.1;
   margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, 
-    var(--ifm-color-primary) 0%,
-    var(--ifm-color-primary-dark) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--ifm-color-primary) 0,
+    var(--ifm-color-primary-dark) 100%
+  );
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.02em;
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
-
 .highlight {
   color: var(--ifm-color-primary);
   -webkit-text-fill-color: var(--ifm-color-primary);
 }
-
 .heroSubtitle {
   font-size: clamp(1.1rem, 2vw, 1.5rem);
   line-height: 1.5;
@@ -48,45 +43,31 @@
   color: var(--ifm-color-emphasis-700);
   max-width: 540px;
 }
-
+.primaryButton:hover,
+.secondaryButton:hover {
+  transform: translateY(-2px);
+  background: var(--ifm-color-primary-dark);
+  color: #fff;
+}
 .heroButtons {
   display: flex;
   gap: 1.25rem;
   margin-top: 2rem;
 }
-
-.primaryButton, .secondaryButton {
+.primaryButton,
+.secondaryButton {
   padding: 0.875rem 2rem;
   border-radius: 10px;
   font-weight: 500;
   font-size: 1.1rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
-.primaryButton {
-  background: var(--ifm-color-primary);
-  color: white;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
-              0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.primaryButton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-              0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
+.primaryButton ,
 .secondaryButton {
-  background: transparent;
+  background: 0 0;
   color: var(--ifm-color-primary);
   border: 2px solid var(--ifm-color-primary);
 }
-
-.secondaryButton:hover {
-  background: var(--ifm-color-primary);
-  color: white;
-}
-
 .heroImage {
   flex: 1;
   display: flex;
@@ -94,27 +75,27 @@
   align-items: center;
   max-width: 500px;
 }
-
 .robotAnimation {
   width: 100%;
   height: auto;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s;
 }
-
 .robotAnimation:hover {
   transform: scale(1.02);
 }
-
 .robotPlaceholder {
   width: 400px;
   height: 400px;
-  background: linear-gradient(45deg, var(--ifm-color-primary-lighter), var(--ifm-color-primary-lightest));
+  background: linear-gradient(
+    45deg,
+    var(--ifm-color-primary-lighter),
+    var(--ifm-color-primary-lightest)
+  );
   border-radius: 20px;
   opacity: 0.8;
 }
-
 @media (max-width: 996px) {
   .hero {
     grid-template-columns: 1fr;
@@ -122,25 +103,20 @@
     text-align: center;
     gap: 3rem;
   }
-
   .heroButtons {
     justify-content: center;
   }
-
   .heroTitle {
     font-size: 2.5rem;
   }
-
   .heroSubtitle {
     font-size: 1.2rem;
     margin: 0 auto;
   }
-
   .robotPlaceholder {
     width: 300px;
     height: 300px;
   }
-
   .heroImage {
     max-width: 300px;
     margin: 0 auto;

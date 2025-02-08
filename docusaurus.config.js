@@ -64,11 +64,11 @@ const config = {
         title: 'Humanoid Robot MQP',
         logo: {
           alt: 'WPI Robot Logo',
-          src: 'assets/logo.png',
-          srcDark: 'assets/logo_dark.png',
+          src: 'assets/logo.webp',
+          srcDark: 'assets/logo_dark.webp',
         },
         items: [
-          {
+          { 
             label: 'Sections',
             position: 'left',
             items: [
