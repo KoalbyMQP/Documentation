@@ -138,6 +138,10 @@ const config = {
                 label: 'About MQP',
                 href: 'https://www.wpi.edu/academics/undergraduate/major-qualifying-project',
               },
+              {
+                label: 'About WPI',
+                href: 'https://www.wpi.edu/',
+              },
             ],
           },
           {
@@ -150,6 +154,10 @@ const config = {
               {
                 label: 'Project Updates',
                 href: 'https://github.com/KoalbyMQP/Documentation/releases',
+              },
+              {
+                label: 'Decap CMS',
+                href: 'https://decapcms.org/docs/intro/',
               },
             ],
           },

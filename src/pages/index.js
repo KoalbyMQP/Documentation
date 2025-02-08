@@ -4,6 +4,7 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
+import { BsBoxArrowUpRight } from "react-icons/bs";
 import styles from './index.module.css';
 
 function HeroSection() {
@@ -21,9 +22,17 @@ function HeroSection() {
           <Link className={clsx('button', styles.primaryButton)} to="/docs/documentation-tutorial/intro">
             Documentation writing guide
           </Link>
-          <Link className={clsx('button', styles.secondaryButton)} to="https://github.com/orgs/KoalbyMQP/repositories">
+          <Link
+            className={clsx('button', styles.secondaryButton)}
+            to="https://github.com/orgs/KoalbyMQP/repositories">
             Project's GitHub
           </Link>
+        </div>
+        <div className={styles.cmsLink}>
+          <a href="/admin">
+            <span className={styles.cmsText}>Write documentation with Decap CMS</span>
+            <BsBoxArrowUpRight className={styles.arrow} />
+          </a>
         </div>
       </div>
       <div className={styles.heroImage}>

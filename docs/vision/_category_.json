@@ -1,5 +1,10 @@
 {
-  "type": "generated-index",
   "label": "vision",
-  "position": 1
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "title": "Vision",
+    "slug": "/visions",
+    "description": "Documentation about Vision"
+  }
 }

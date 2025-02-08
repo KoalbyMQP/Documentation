@@ -12,6 +12,8 @@ slug:
   sanitize_replacement: "-"
 
 collections:
+  # SECTION COLLECTION:
+  # This collection lets editors create/manage sections (folders) inside the docs folder.
   - name: sections
     label: Documentation Sections
     folder: docs
@@ -23,7 +25,7 @@ collections:
       - name: label
         label: Section Name
         widget: string
-        hint: "Name of the new section/folder - this will be the folder name"
+        hint: "Name of the new section/folder – this will be the folder name"
         pattern: ['^[a-zA-Z0-9-]+$', "Only letters, numbers, and hyphens are allowed"]
       - name: position
         label: Position
@@ -37,6 +39,8 @@ collections:
         default: "generated-index"
         hint: "Usually keep as generated-index"
 
+  # PAGE COLLECTION:
+  # This collection lets editors create Markdown pages. They can be placed in any folder.
   - name: pages
     label: Documentation Pages
     folder: docs
@@ -46,12 +50,13 @@ collections:
     nested:
       depth: 100
       summary: '{{title}}'
+    # The final path is computed based on the "dirname" field and the URL-friendly "slug".
     path: "{{dirname}}/{{slug}}"
     fields:
       - name: dirname
         label: Section/Folder
         widget: string
-        hint: "The folder path where this page should be created (e.g., 'tutorial-basics' or leave empty for root)"
+        hint: "The folder path where this page should be created. For a page inside a section, enter the section's folder name (e.g., 'tutorial-basics'). Leave empty for a page in the root docs folder."
       - name: title
         label: Page Title
         widget: string
