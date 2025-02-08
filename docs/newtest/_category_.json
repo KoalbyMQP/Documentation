@@ -1,0 +1,10 @@
+{
+  "link": {
+    "type": "generated-index",
+    "title": "{{label}}",
+    "slug": "",
+    "description": "This is a test"
+  },
+  "label": "newtest",
+  "position": 2
+}
