@@ -15,7 +15,7 @@ function HeroSection() {
           WPI Humanoid Robot <span className={styles.highlight}>MQP</span>
         </h1>
         <p className={styles.heroSubtitle}>
-          Advancing the future of robotics through innovative design and intelligent systems
+          WPI Humanoid Robot MQP Project Documentation Hub
         </p>
         <div className={styles.heroButtons}>
           <Link className={clsx('button', styles.primaryButton)} to="/docs/documentation-tutorial/intro">
