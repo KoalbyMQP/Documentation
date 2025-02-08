@@ -69,30 +69,31 @@ const config = {
         },
         items: [
           {
-            type: 'docSidebar',
-            sidebarId: 'docsSidebar',
+            label: 'Sections',
             position: 'left',
-            label: 'Documentation',
-          },
-          {
-            to: '/docs/sections/speech-recognition',
-            label: 'Speech',
-            position: 'left',
-          },
-          {
-            to: '/docs/sections/vision',
-            label: 'Vision',
-            position: 'left',
-          },
-          {
-            to: '/docs/sections/urdf',
-            label: 'Locomotion',
-            position: 'left',
-          },
-          {
-            to: '/docs/sections/tools',
-            label: 'Tools',
-            position: 'left',
+            items: [
+              {
+                label: 'Documentation',
+                type: 'docSidebar',
+                sidebarId: 'docsSidebar',
+              },
+              {
+                label: 'Speech',
+                to: '/docs/sections/speech-recognition',
+              },
+              {
+                label: 'Vision',
+                to: '/docs/sections/vision',
+              },
+              {
+                label: 'Locomotion',
+                to: '/docs/sections/urdf',
+              },
+              {
+                label: 'Tools',
+                to: '/docs/sections/tools',
+              },
+            ],
           },
           {
             type: 'search',
