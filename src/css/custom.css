@@ -106,6 +106,10 @@
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+html[data-theme="light"] .footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 /* Navbar base styles */
 .navbar {
   backdrop-filter: blur(12px) saturate(180%);

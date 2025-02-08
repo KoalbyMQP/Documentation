@@ -19,10 +19,10 @@ function HeroSection() {
         </p>
         <div className={styles.heroButtons}>
           <Link className={clsx('button', styles.primaryButton)} to="/docs/documentation-tutorial/intro">
-            View Documentation
+            Documentation writing guide
           </Link>
-          <Link className={clsx('button', styles.secondaryButton)} to="https://github.com/KoalbyMQP">
-            GitHub Repository
+          <Link className={clsx('button', styles.secondaryButton)} to="https://github.com/orgs/KoalbyMQP/repositories">
+            Project's GitHub
           </Link>
         </div>
       </div>
