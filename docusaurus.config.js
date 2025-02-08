@@ -73,7 +73,7 @@ const config = {
             position: 'left',
             items: [
               {
-                label: 'Documentation',
+                label: 'Getting Started',
                 type: 'docSidebar',
                 sidebarId: 'docsSidebar',
               },
