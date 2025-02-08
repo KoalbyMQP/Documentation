@@ -152,12 +152,16 @@ const config = {
                 href: 'https://github.com/KoalbyMQP',
               },
               {
-                label: 'Project Updates',
-                href: 'https://github.com/KoalbyMQP/Documentation/releases',
+                label: 'Docusaurus',
+                href: 'https://docusaurus.io/docs',
               },
               {
                 label: 'Decap CMS',
                 href: 'https://decapcms.org/docs/intro/',
+              },
+              {
+                label: 'Algolia DocSearch',
+                href: 'https://docsearch.algolia.com/docs/what-is-docsearch/',
               },
             ],
           },
