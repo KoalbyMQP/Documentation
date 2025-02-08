@@ -32,12 +32,31 @@ collections:
         widget: number
         value_type: int
         hint: "Order in the sidebar (lower numbers first)"
-      - name: type
-        label: Section Type
-        widget: select
-        options: ["generated-index", "doc"]
-        default: "generated-index"
-        hint: "Usually keep as generated-index"
+      - name: link
+        label: Link Settings
+        widget: object
+        fields:
+          - name: type
+            label: Type
+            widget: select
+            options: ["generated-index", "doc"]
+            default: "generated-index"
+            hint: "Keep as generated-index for auto-generating a category index."
+          - name: title
+            label: Generated Index Title
+            widget: string
+            hint: "This title appears on the generated index page as the main title of the page."
+          - name: slug
+            label: URL Slug
+            widget: string
+            required: true
+            hint: "Provide a URL-friendly string starting with a slash (e.g., '/visions' or '/speech-recognition'). This will determine the page URL and sidebar entry."
+          - name: description
+            label: Description
+            widget: string
+            required: false
+            default: ""
+            hint: "A brief description for the category page."
 
   # PAGE COLLECTION:
   # This collection lets editors create Markdown pages. They can be placed in any folder.
