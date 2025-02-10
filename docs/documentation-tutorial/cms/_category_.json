@@ -1,0 +1,8 @@
+{
+  "label": "Content Management System (CMS)",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Learn how to manage documentation using Decap CMS, a user-friendly web interface for content editing."
+  }
+} 

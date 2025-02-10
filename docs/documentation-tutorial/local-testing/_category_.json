@@ -1,0 +1,8 @@
+{
+  "label": "Local Development",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Learn how to set up and run the documentation site locally for testing and development."
+  }
+} 

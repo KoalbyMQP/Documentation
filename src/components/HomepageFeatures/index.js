@@ -9,28 +9,28 @@ const FeatureList = [
     description: 'Speech recognition system for real-time voice commands and interaction.',
     tags: ['Python', 'OpenRouter', 'OpenAI Whisper', 'Google Speech-to-Text'],
     repoUrl: 'https://github.com/KoalbyMQP/SpeechRecognition',
-    docsUrl: '/docs/speech-recognition',
+    docsUrl: '/speech-recognition',
   },
   {
     title: 'Vision System',
     description: 'Computer vision system for real-time object detection and tracking.',
     tags: ['Python', 'DepthAI', 'Oak-D-Lite'],
     repoUrl: 'https://github.com/KoalbyMQP/VisionSystem',
-    docsUrl: '/docs/vision-system',
+    docsUrl: '/vision',
   },
   {
     title: 'Locomotion',
     description: 'Motion control system that enables robot movements, including walking, balancing, and object manipulation.',
     tags: ['C++', 'Python'],
     repoUrl: 'https://github.com/KoalbyMQP/Locomotion',
-    docsUrl: '/docs/locomotion',
+    docsUrl: '/locomotion',
   },
   {
     title: 'Tools',
     description: 'Development and debugging tools for monitoring robot performance, analyzing sensor data, and rapid prototyping.',
     tags: ['Grafana', 'Prometheus', 'Docker'],
     repoUrl: 'https://github.com/KoalbyMQP/Tools',
-    docsUrl: '/docs/tools',
+    docsUrl: '/tools',
   },
 ];
 

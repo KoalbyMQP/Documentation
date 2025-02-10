@@ -22,8 +22,8 @@ const config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
+  organizationName: 'KoalbyMQP',
+  projectName: 'Documentation',
 
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
@@ -43,8 +43,7 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
+          routeBasePath: '/',
           editUrl: 'https://github.com/KoalbyMQP/Documentation/tree/main/',
         },
         theme: {
@@ -74,24 +73,31 @@ const config = {
             items: [
               {
                 label: 'Getting Started',
-                type: 'docSidebar',
-                sidebarId: 'docsSidebar',
+                to: '/welcome',
               },
               {
-                label: 'Speech',
-                to: '/docs/sections/speech-recognition',
+                label: 'Documentation Guide',
+                to: '/documentation-tutorial',
+              },
+              {
+                label: 'Python Guide',
+                to: '/python-dev-guide',
+              },
+              {
+                label: 'Speech Recognition',
+                to: '/speech-recognition',
               },
               {
                 label: 'Vision',
-                to: '/docs/sections/vision',
+                to: '/vision',
               },
               {
                 label: 'Locomotion',
-                to: '/docs/sections/urdf',
+                to: '/locomotion',
               },
               {
                 label: 'Tools',
-                to: '/docs/sections/tools',
+                to: '/tools',
               },
             ],
           },
@@ -114,20 +120,32 @@ const config = {
             title: 'Documentation',
             items: [
               {
-                label: 'Speech',
-                to: '/docs/sections/speech-recognition',
+                label: 'Getting Started',
+                to: '/welcome',
+              },
+              {
+                label: 'Documentation Guide',
+                to: '/documentation-tutorial',
+              },
+              {
+                label: 'Python Guide',
+                to: '/python-dev-guide',
+              },
+              {
+                label: 'Speech Recognition',
+                to: '/speech-recognition',
               },
               {
                 label: 'Vision',
-                to: '/docs/sections/vision',
+                to: '/vision',
               },
               {
                 label: 'Locomotion',
-                to: '/docs/sections/urdf',
+                to: '/locomotion',
               },
               {
                 label: 'Tools',
-                to: '/docs/sections/performance-monitoring',
+                to: '/tools',
               },
             ],
           },
@@ -167,6 +185,18 @@ const config = {
           },
         ],
         copyright: `Copyright © ${new Date().getFullYear()} WPI Humanoid Robot MQP. Built with Docusaurus.`,
+      },
+      algolia: {
+        appId: process.env.ALGOLIA_APP_ID || '',
+        apiKey: process.env.ALGOLIA_SEARCH_API_KEY || '',
+        indexName: process.env.ALGOLIA_INDEX_NAME || '',
+        // Optional: 
+        contextualSearch: false,
+        replaceSearchResultPathname: {
+          from: "/docs/", // or as RegExp: /\/docs\//
+          to: "/",
+        },
+        // You can add other optional Algolia parameters here if needed.
       },
       prism: {
         theme: prismThemes.github,

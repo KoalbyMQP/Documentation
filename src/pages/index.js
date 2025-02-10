@@ -19,7 +19,7 @@ function HeroSection() {
           WPI Humanoid Robot MQP Project Documentation Hub
         </p>
         <div className={styles.heroButtons}>
-          <Link className={clsx('button', styles.primaryButton)} to="/docs/documentation-tutorial/intro">
+          <Link className={clsx('button', styles.primaryButton)} to="/documentation-tutorial">
             Documentation writing guide
           </Link>
           <Link
