@@ -1,41 +1,18 @@
-# Website
+# WPI Humanoid Robot MQP Documentation
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+This is the documentation hub for WPI's Humanoid Robot MQP project, built using [Docusaurus](https://docusaurus.io/).
 
-### Installation
+## 🌐 Documentation Access
 
+- Main URL: [verdant-moxie-980963.netlify.app](https://verdant-moxie-980963.netlify.app/)
+- Short URL: [tinyurl.com/WPIHumanoidRobotMQP](https://tinyurl.com/WPIHumanoidRobotMQP)
+
+### Repository Structure
 ```
-$ yarn
-```
-
-### Local Development
-
-```
-$ yarn start
-```
-
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-### Build
-
-```
-$ yarn build
+docs/               # Documentation content
+archive/            # Historical code archives
+├── Humanoid-Website/        # Old website implementation
+└── demo-repository/         # Old demo repository
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-
-### Deployment
-
-Using SSH:
-
-```
-$ USE_SSH=true yarn deploy
-```
-
-Not using SSH:
-
-```
-$ GIT_USER=<Your GitHub username> yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+For detailed guides on contributing, writing documentation, and setting up your development environment, please visit our [Documentation Tutorial](https://verdant-moxie-980963.netlify.app/documentation-tutorial).

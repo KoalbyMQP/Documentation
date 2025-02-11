@@ -12,8 +12,9 @@ This guide will help you set up and run the documentation site locally for testi
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
-- [Node.js](https://nodejs.org/) (version 16.14 or above)
+- [Node.js](https://nodejs.org/) (version 18.0 or above)
 - [Git](https://git-scm.com/)
+- [Yarn](https://yarnpkg.com/) (recommended) or npm
 - A code editor (we recommend [VS Code](https://code.visualstudio.com/))
 
 ## Initial Setup
@@ -38,6 +39,11 @@ cd your-docs-repo
 npm install
 ```
 
+# Alternatively, using Yarn:
+```bash
+yarn
+```
+
 ## Running the Development Server
 
 ### Starting the Server
@@ -45,6 +51,11 @@ npm install
 ```bash
 # Start the development server
 npm start
+```
+
+# Alternatively, using Yarn:
+```bash
+yarn start
 ```
 
 This will:
@@ -76,6 +87,12 @@ npm run build
 
 # Serve the built site locally
 npm run serve
+```
+
+# Alternatively, using Yarn:
+```bash
+yarn build
+yarn serve
 ```
 
 This helps ensure your changes will work in production.
