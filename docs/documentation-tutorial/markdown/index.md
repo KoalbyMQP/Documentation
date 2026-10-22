@@ -1,5 +1,4 @@
 ---
-id: markdown-guide
 title: Writing Documentation with Markdown
 sidebar_label: Markdown Guide
 sidebar_position: 1

@@ -1,5 +1,4 @@
 ---
-id: python-repo-best-practices
 title: Python Repo Best Practices
 sidebar_label: Python Repo Best Practices
 sidebar_position: 1

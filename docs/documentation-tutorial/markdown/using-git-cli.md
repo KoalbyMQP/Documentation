@@ -1,5 +1,4 @@
 ---
-id: using-git-cli
 title: Using Git Command Line
 sidebar_label: Git Command Line
 sidebar_position: 2
