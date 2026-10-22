@@ -34,33 +34,64 @@ This guide will teach you how to write documentation using Markdown and manage y
 
 ### File Structure
 
-Documentation files should be organized as follows:
+Documentation files should be organized as follows. The comments show how each `.md` file maps to a URL:
+
 ```
 docs/
 ├── category-name/
 │   ├── _category_.json
-│   ├── index.md
-│   └── article.md
+│   ├── index.md                 # [baseUrl]/category-name
+│   └── article.md               # [baseUrl]/category-name/article
 └── another-category/
     ├── _category_.json
-    └── index.md
+    ├── index.md                 # [baseUrl]/another-category
+    └── sub-category/
+        ├── _category_.json
+        ├── index.md             # [baseUrl]/another-category/sub-category
+        └── article.md           # [baseUrl]/another-category/sub-category/article
 ```
 
 ### Creating New Content
 
 1. **Create a New File**
-   - Create a `.md` file in the appropriate directory
+   - Create a `.md` file in the appropriate directory; use `index.md` for the root page in a category
    - Use lowercase with hyphens for filenames (e.g., `getting-started.md`)
 
 2. **Add Frontmatter**
-   ```yaml
-   ---
-   id: unique-id
-   title: Your Page Title
-   sidebar_label: Sidebar Label
-   sidebar_position: 1
-   ---
-   ```
+
+```yaml
+---
+id: unique-id
+title: Your Page Title
+sidebar_label: Sidebar Label
+sidebar_position: 1
+---
+```
+
+- The `id` field is optional. It defaults to the name of the file. Override it if you want to have a different URL for the page
+- The `sidebar_position` sets the position in the sidebar of this page relative to other pages in the category. If multiple pages have the same `sidebar_position`, then they are listed in alphabetical order of their file name
+
+### Creating a Category
+
+A `_category_.json` file inside a directory causes a category to be generated, which does the following:
+- Creates a category page, which just has links to all other pages in the category
+- Groups all pages in the category under a dropdown menu in the sidebar
+
+Example `_category_.json`:
+
+```json
+{
+  "label": "Header text for the category page",
+  "position": 2,                // position of this category relative to other categories
+  "collapsed": true,            // whether to collapse the sidebar dropdown menu by default
+  "link": {
+    "type": "generated-index",
+    "description": "Text that appears under the header before the links to other pages"
+  }
+} 
+```
+
+The URL of the generated category page is `[baseUrl]/category/label-text-in-kebab-case`.
 
 ### Markdown Syntax
 
