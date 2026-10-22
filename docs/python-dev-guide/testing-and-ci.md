@@ -1,5 +1,4 @@
 ---
-id: testing_ci
 title: Testing & Continuous Integration
 sidebar_label: Testing & Continuous Integration
 sidebar_position: 4

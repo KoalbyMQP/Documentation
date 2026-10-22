@@ -1,5 +1,4 @@
 ---
-id: local-testing
 title: Local Development Guide
 sidebar_label: Local Testing
 sidebar_position: 1

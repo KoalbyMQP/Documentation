@@ -1,5 +1,4 @@
 ---
-id: ignoring_generated_files
 title: Ignoring Generated Files
 sidebar_label: Ignoring Generated Files
 sidebar_position: 1
