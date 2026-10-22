@@ -186,18 +186,22 @@ const config = {
         ],
         copyright: `Copyright © ${new Date().getFullYear()} WPI Humanoid Robot MQP. Built with Docusaurus.`,
       },
-      algolia: {
-        appId: process.env.ALGOLIA_APP_ID || '',
-        apiKey: process.env.ALGOLIA_SEARCH_API_KEY || '',
-        indexName: process.env.ALGOLIA_INDEX_NAME || '',
-        // Optional: 
-        contextualSearch: false,
-        replaceSearchResultPathname: {
-          from: "/docs/", // or as RegExp: /\/docs\//
-          to: "/",
+      // Only enable Algolia when credentials are provided; empty values fail
+      // config validation and break local builds.
+      ...(process.env.ALGOLIA_APP_ID && {
+        algolia: {
+          appId: process.env.ALGOLIA_APP_ID,
+          apiKey: process.env.ALGOLIA_SEARCH_API_KEY,
+          indexName: process.env.ALGOLIA_INDEX_NAME,
+          // Optional:
+          contextualSearch: false,
+          replaceSearchResultPathname: {
+            from: "/docs/", // or as RegExp: /\/docs\//
+            to: "/",
+          },
+          // You can add other optional Algolia parameters here if needed.
         },
-        // You can add other optional Algolia parameters here if needed.
-      },
+      }),
       prism: {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
