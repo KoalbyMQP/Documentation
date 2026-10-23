@@ -1,0 +1,9 @@
+{
+  "label": "ZaraOS",
+  "position": 1,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "description": "ZaraOS - The Operating System of the Robot"
+  }
+}
