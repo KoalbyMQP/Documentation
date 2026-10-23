@@ -1,5 +1,4 @@
 ---
-id: welcome
 title: Welcome to Koalby MQP
 sidebar_label: Getting Started
 sidebar_position: 0

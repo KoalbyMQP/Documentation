@@ -1,5 +1,4 @@
 ---
-id: documentation-tutorial
 title: Getting Started with Documentation
 sidebar_label: Getting Started
 sidebar_position: 1

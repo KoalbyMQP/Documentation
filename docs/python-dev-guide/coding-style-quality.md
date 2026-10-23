@@ -1,5 +1,4 @@
 ---
-id: coding_style_quality
 title: Python Coding Style and Quality
 sidebar_label: Coding Style & Quality
 sidebar_position: 3

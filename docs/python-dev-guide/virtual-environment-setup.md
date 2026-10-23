@@ -1,5 +1,4 @@
 ---
-id: virtual_environment_setup
 title: Setting up Virtual Environments
 sidebar_label: Setting up Virtual Environments
 sidebar_position: 2

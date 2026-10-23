@@ -22,3 +22,12 @@ yarn-error.log*
 # direnv
 .direnv
 .envrc
+
+# ltex
+ltex.dictionary.en-US.txt
+ltex.disabledRules.en-US.txt
+ltex.hiddenFalsePositives.en-US.txt
+
+# drawio
+*.drawio
+*.drawio.bkp

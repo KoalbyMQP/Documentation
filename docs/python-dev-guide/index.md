@@ -1,5 +1,4 @@
 ---
-id: python-dev-guide
 title: Python Development Guide
 sidebar_label: Python Development Guide
 sidebar_position: 0
