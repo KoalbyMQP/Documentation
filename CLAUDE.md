@@ -31,6 +31,6 @@ The repo has no tests and no linter. `npm run build` is the only check. `onBroke
 
 ## Content conventions
 
-- Every page needs frontmatter with `id`, `title`, `sidebar_label`, and `sidebar_position`. Section landing pages are `index.md` inside the section folder.
+- Every page needs frontmatter with `title`, `sidebar_label`, and `sidebar_position`. Section landing pages are `index.md` inside the section folder.
 - Links between pages use relative `.md` paths (for example `./markdown/index.md`) or root paths that match the `routeBasePath: '/'` scheme (for example `/vision`; a section's `index.md` is served at the folder path, so `/vision/index` is a broken link).
 - Admonitions use Docusaurus syntax (`:::note Title ... :::`).
