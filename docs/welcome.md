@@ -11,30 +11,30 @@ Welcome to the comprehensive documentation hub for the Koalby MQP project. This 
 
 ## Documentation Sections
 
-### [Documentation Tutorial](/documentation-tutorial/index)
+### [Documentation Tutorial](/documentation-tutorial)
 Learn how to contribute to this documentation using either Markdown with Git or our CMS system. Perfect for both technical and non-technical contributors.
 
-### [Python Development Guide](/python-dev-guide/index)
+### [Python Development Guide](/python-dev-guide)
 Comprehensive guidelines for Python development, including coding standards, testing practices, and environment setup.
 
 ### Project Components
 
-#### [Vision](/vision/index)
+#### [Vision](/vision)
 Documentation for the computer vision and image processing components of the project.
 
-#### [Speech Recognition](/speech-recognition/index)
+#### [Speech Recognition](/speech-recognition)
 Details about the speech recognition and natural language processing systems.
 
-#### [Locomotion](/locomotion/index)
+#### [Locomotion](/locomotion)
 Information about robot movement and control systems.
 
-#### [Tools](/tools/index)
+#### [Tools](/tools)
 Documentation for various tools and utilities used in the project.
 
 ## Getting Started
 
-1. **New Contributors**: Start with the [Documentation Tutorial](/documentation-tutorial/index) to learn how to contribute.
-2. **Developers**: Check the [Python Development Guide](/python-dev-guide/index) for coding standards and practices.
+1. **New Contributors**: Start with the [Documentation Tutorial](/documentation-tutorial) to learn how to contribute.
+2. **Developers**: Check the [Python Development Guide](/python-dev-guide) for coding standards and practices.
 3. **Component Specific**: Navigate directly to the relevant component section for detailed documentation.
 
 ## Contributing
