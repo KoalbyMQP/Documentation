@@ -89,6 +89,64 @@ kernel-build/output/
 └── zaraos-kernel-*.tar.gz      # Ready-to-deploy archive
 ```
 
+## Deploying to a Raspberry Pi 5
+
+### Method 1: Workflow Script (Recommended)
+```bash
+./kernel-workflow.sh deploy
+```
+
+This will automatically transfer the kernel archive over ssh and installs it.
+
+### Method 2: Manual SSH Transfer
+
+**On your build machine:**
+```bash
+cd ZaraOS/scripts
+./build-kernel-local.sh
+scp ../kernel-build/output/zaraos-kernel-*.tar.gz pi@zaraos:/tmp/
+```
+
+**On the Raspberry Pi 5:**
+```bash
+ssh pi@zaraos
+
+# Extract and baskup current kernel
+cd /tmp
+tar xzf zaraos-kernel-*tar.gz
+sudo cp /boot/Image /boot/Image.backup
+
+# Install new kernel
+sudo cp Image /boot/
+sudo cp dtb/* /boot/overlays/
+
+# Install modules
+sudo cp -r modules/lib/modules/* /lib/modules/
+sudo depmod -a
+
+# Reboot
+sudo reboot
+```
+
+### Method 3: SD Card Modification
+
+1. Build kernel on your machine following compilation instructions
+2. Mount Pi's SD card on build machine
+3. Copy files to boot partition:
+   ```bash
+   sudo cp Image /Volumes/boot/
+   sudo cp dtb/*.dtb /Volumes/boot/overlays/
+   ```
+### Verifying Installation
+
+After reboot:
+```bash
+ssh pi@zaraos
+uname -a         # check kernel version
+lsmod            # check modules loaded
+dmesg | head -30 # watch boot log for errors
+```
+
 #todo check `ZaraOS/ZaraOS/KERNEL_BUILD.md`
 
 #todo future sections
