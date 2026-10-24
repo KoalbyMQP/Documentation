@@ -147,6 +147,30 @@ lsmod            # check modules loaded
 dmesg | head -30 # watch boot log for errors
 ```
 
+## Kernel Configuration
+
+### Pi 5 Fragment (`kernel-fragments/linux-pi5.fragment`)
+- 16K page size (Pi 5 optimization)
+- GPU: VC4/V3D DRM drivers
+- WiFi: Broadcom brcmfmac
+- I/O: GPIO, I2C, SPI, PWM, USB serial
+- Container support (namespaces, cgroups, overlay FS, seccomp)
+
+### Customizing Configuration
+
+```bash
+# Launch menuconfig before building
+./build-kernel-local.sh --menuconfig
+
+# Your config is saved to output/kernel-config-<timestamp>
+```
+## Further Reading
+
+- [Buildroot Manual](https://buildroot.org/downloads/manual/manual.html)
+- [Raspberry Pi Kernel Build](https://www.raspberrypi.com/documentation/computers/linux_kernel.html)
+- [QEMU ARM Emulation](https://wiki.qemu.org/Documentation/Platforms/ARM)
+- [Linux Kernel Configuration](https://www.kernel.org/doc/html/latest/admin-guide/index.html)
+
 #todo check `ZaraOS/ZaraOS/KERNEL_BUILD.md`
 
 #todo future sections
