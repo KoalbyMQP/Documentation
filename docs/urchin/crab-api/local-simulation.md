@@ -9,3 +9,5 @@ sidebar_position: 2
 :::note TODO
 Add screenshots / guide.
 :::
+
+## Runnig Crab wihtout hardware
