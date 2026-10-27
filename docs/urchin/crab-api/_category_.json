@@ -1,9 +1,9 @@
 {
   "label": "Crab API",
-  "position": 8,
+  "position": 3,
   "collapsed": false,
   "link": {
     "type": "generated-index",
-    "description": "ESP32 motor-control API "
+    "description": "Python API for talking to the Urchin firmware"
   }
 }
