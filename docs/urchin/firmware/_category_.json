@@ -1,0 +1,9 @@
+{
+  "label": "Firmware",
+  "position": 7,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "description": "ESP32 motor-control firmware"
+  }
+}

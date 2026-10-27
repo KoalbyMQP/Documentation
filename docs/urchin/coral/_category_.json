@@ -1,0 +1,9 @@
+{
+  "label": "Coral Multiplexer",
+  "position": 9,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "description": "Controls mutiple instances of Crab API"
+  }
+}
