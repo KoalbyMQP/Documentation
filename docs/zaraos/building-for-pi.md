@@ -25,37 +25,13 @@ containing `flake.nix`:
 ```sh
 nix develop
 ```
-## Setup
-
-### MacOS
-```bash
-# Install build tools
-brew install make gcc@14 bison flex
-
-# Install cross-compiler (required for both Pi 5 and QEMU builds)
-brew tap messense/macos-cross-toolchains
-brew install aarch64-unknown-linux-gnu
-
-# Install QEMU for local testing
-brew install qemu
-```
-
-### Linux (Ubuntu/Debian)
-```bash
-# Install build tools and cross-compiler
-sudo apt install build-essential bison flex libssl-dev gcc-aarch64-linux-gnu
-
-# Install QEMU
-sudo apt install qemu-system-arm
-```
-
 ## Compiling
 The first build will take anywhere from 5 to 15 minutes depending on your CPU.
 Rebuilds will be much faster, aroudn 2 to 3 minutes.
 
 ```bash
-cd ZaraOS/scripts
-./build-kernel-local.sh
+cd ZaraOS/
+nix develop
 ```
 
 **What this does:**
@@ -68,16 +44,16 @@ cd ZaraOS/scripts
 
 ```bash
 # Use 8 parallel jobs (faster on multi-core)
-./build-kernel-local.sh -j 8
+./ZaraOS/scripts/build-kernel-local.sh -j 8
 
 # Interactive kernel configuration (menuconfig)
-./build-kernel-local.sh --menuconfig
+./ZaraOS/scripts/build-kernel-local.sh --menuconfig
 
 # Clean all previous builds
-./build-kernel-local.sh --clean
+./ZaraOS/scripts/build-kernel-local.sh --clean
 
 # QEMU build with menuconfig
-./build-kernel-local.sh --qemu --menuconfig -j 8
+./ZaraOS/scripts/build-kernel-local.sh --qemu --menuconfig -j 8
 ```
 
 ### Output Files
