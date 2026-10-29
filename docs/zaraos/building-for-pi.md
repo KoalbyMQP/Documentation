@@ -4,82 +4,111 @@ sidebar_label: Building for Pi 5
 sidebar_position: 4
 ---
 
-# Building for Raspberry Pi
+# Building for Raspberry Pi 5
 
-:::warning
-Building ZaraOS from source can take upwards of 30 minutes the first time you do it. Plan
-accordingly
-:::
+This page covers building the **ZaraOS kernel** (kernel image, device trees, and modules)
+for a Raspberry Pi 5 and installing it on a Pi that is already running ZaraOS.
+
+The full flashable SD card image (`sdcard.img`) is built with Buildroot using
+`ZaraOS/configs/zaraos_pi5_defconfig`. This page only covers the faster kernel-only build.
 
 ## Prerequisites
 
-Install the following dependencies:
-- [Nix package manager](https://nixos.org/download/)
-    - Note: you can also use [nix determinate](https://determinate.systems/install/)
+- [Nix package manager](https://nixos.org/download/) with flakes enabled
+    - [Determinate Nix](https://determinate.systems/install/) enables flakes by default
+- About 10 GB of free disk space for the kernel source and build output
 
+The Nix dev shell defined in `flake.nix` provides everything else: the aarch64 cross
+compiler, GNU Make, and the kernel build tools.
 
-The nix development shell in `flake.nix` contains all the dependencies needed to build
-ZaraOS. Enter the dev shell by running the following command from the same directory
-containing `flake.nix`:
+### macOS: use a case-sensitive volume
 
-```sh
-nix develop
-```
-## Compiling
-The first build will take anywhere from 5 to 15 minutes depending on your CPU.
-Rebuilds will be much faster, aroudn 2 to 3 minutes.
+The Linux kernel source has files whose names differ only by case (for example
+`ipt_ECN.h` and `ipt_ecn.h`). The default macOS disk is case-insensitive, so one file
+overwrites the other and the Pi 5 build fails with errors such as
+`'IPT_ECN_OP_SET_CWR' undeclared` in `net/ipv4/netfilter/ipt_ECN.c`.
+
+Linux hosts are not affected and can skip this step.
+
+Create and mount a case-sensitive disk image once, then point the build at it with
+`WORK_DIR`:
 
 ```bash
-cd ZaraOS/
-nix develop
+hdiutil create -size 30g -type SPARSE -fs "Case-sensitive APFS" \
+    -volname zaraos-build ~/zaraos-build.sparseimage
+hdiutil attach ~/zaraos-build.sparseimage   # mounts at /Volumes/zaraos-build
+
+export WORK_DIR=/Volumes/zaraos-build/kernel-build
 ```
 
+After a reboot, run `hdiutil attach ~/zaraos-build.sparseimage` again and re-export
+`WORK_DIR` before building.
+
+If you already ran a build on the case-insensitive disk, its kernel source is corrupted.
+Delete it (`rm -rf ../kernel-build/downloads`) or build in the new `WORK_DIR`.
+
+## Compiling
+
+All commands below are run from the **root of the ZaraOS repository** (the directory
+containing `flake.nix`).
+
+```bash
+nix develop                              # enter the dev shell
+./ZaraOS/scripts/build-kernel-local.sh   # build for Pi 5 (the default target)
+```
+
+The first build takes about 10 to 15 minutes, including downloading the kernel source.
+Rebuilds are much faster because the source is reused and `ccache` caches compiled objects.
+
 **What this does:**
-1. Downloads the Raspberry Pi Linux kernel (stable_20250916)
-2. Applies Pi 5 configuration (`bcm2712_defconfig` + `linux-pi5.fragment`)
-3. Compiles kernel, modules, and copies device trees
-4. Creates a deployment-ready archive
+1. Clones the Raspberry Pi Linux kernel (`stable_20250916`)
+2. Applies the Pi 5 configuration (`bcm2712_defconfig` + `kernel-fragments/linux-pi5.fragment`)
+3. Compiles the kernel, device trees, and modules
+4. Packages them into a deployment archive
 
 ### Build Options
 
 ```bash
-# Use 8 parallel jobs (faster on multi-core)
+# Set the number of parallel jobs (defaults to the number of CPU cores)
 ./ZaraOS/scripts/build-kernel-local.sh -j 8
 
 # Interactive kernel configuration (menuconfig)
 ./ZaraOS/scripts/build-kernel-local.sh --menuconfig
 
-# Clean all previous builds
+# Delete the downloaded source and build directory
 ./ZaraOS/scripts/build-kernel-local.sh --clean
-
-# QEMU build with menuconfig
-./ZaraOS/scripts/build-kernel-local.sh --qemu --menuconfig -j 8
 ```
 
 ### Output Files
+
+By default, output goes to `kernel-build/` **next to** the ZaraOS repository, not inside
+it (for example `~/MQP/kernel-build` if the repo is at `~/MQP/ZaraOS`). If you set
+`WORK_DIR`, output goes to `$WORK_DIR/output` instead.
+
 ```
 kernel-build/output/
-├── Image                       # Kernel image (copy to Pi /boot/)
-├── dtb/                        # Device tree files
-├── modules/                    # Compiled kernel modules
-└── zaraos-kernel-*.tar.gz      # Ready-to-deploy archive
+├── Image                       # Kernel image (16K pages)
+├── dtb/                        # Device trees (bcm2712-rpi-5-b.dtb, bcm2712d0-rpi-5-b.dtb, ...)
+├── modules/lib/modules/<ver>/  # Kernel modules, e.g. 6.12.47-v8-16k+
+├── build.log                   # Full compiler output
+└── zaraos-kernel-*.tar.gz      # Image + dtb/ + modules/, ready to deploy
 ```
 
 ## Deploying to a Raspberry Pi 5
 
-### Method 1: Workflow Script (Recommended)
+ZaraOS mounts the boot partition at `/boot` and boots the kernel named `Image`
+(`kernel=Image` in `config.txt`). There is no `pi` user or `sudo` on ZaraOS, so the
+commands below are run as `root`.
+
+Install the base device tree files (`*.dtb`) into the **root** of the boot partition, not
+into `overlays/`. The firmware only loads them from there. A device tree that doesn't
+match the kernel leaves the RP1 chip unconfigured, which breaks USB, Ethernet, and GPIO.
+
+### Method 1: Copy Over SSH
+
+**On your build machine** (from the ZaraOS repo root; replace `zaraos` with the Pi's IP
+address if the hostname doesn't resolve):
 ```bash
-./kernel-workflow.sh deploy
-```
-
-This will automatically transfer the kernel archive over ssh and installs it.
-
-### Method 2: Manual SSH Transfer
-
-**On your build machine:**
-```bash
-cd ZaraOS/scripts
-./build-kernel-local.sh
 scp ../kernel-build/output/zaraos-kernel-*.tar.gz pi@zaraos:/tmp/
 ```
 
@@ -87,69 +116,68 @@ scp ../kernel-build/output/zaraos-kernel-*.tar.gz pi@zaraos:/tmp/
 ```bash
 ssh pi@zaraos
 
-# Extract and baskup current kernel
 cd /tmp
-tar xzf zaraos-kernel-*tar.gz
-sudo cp /boot/Image /boot/Image.backup
+tar xzf zaraos-kernel-*.tar.gz
 
-# Install new kernel
-sudo cp Image /boot/
-sudo cp dtb/* /boot/overlays/
+# Back up the current kernel and device trees
+cp /boot/Image /boot/Image.backup
+cp /boot/bcm2712-rpi-5-b.dtb /boot/bcm2712-rpi-5-b.dtb.backup
+cp /boot/bcm2712d0-rpi-5-b.dtb /boot/bcm2712d0-rpi-5-b.dtb.backup
+
+# Install the new kernel and Pi 5 device trees
+cp Image /boot/
+cp dtb/bcm2712-rpi-5-b.dtb dtb/bcm2712d0-rpi-5-b.dtb /boot/
 
 # Install modules
-sudo cp -r modules/lib/modules/* /lib/modules/
-sudo depmod -a
+cp -r modules/lib/modules/* /lib/modules/
+depmod -a
 
-# Reboot
-sudo reboot
+sync
+reboot
 ```
 
-### Method 3: SD Card Modification
+### Method 2: SD Card
 
-1. Build kernel on your machine following compilation instructions
-2. Mount Pi's SD card on build machine
-3. Copy files to boot partition:
+1. Power off the Pi and put its SD card in your build machine.
+2. Copy the kernel and device trees into the boot (FAT) partition. Replace
+   `<boot-partition>` with where your OS mounted it:
    ```bash
-   sudo cp Image /Volumes/boot/
-   sudo cp dtb/*.dtb /Volumes/boot/overlays/
+   cp kernel-build/output/Image <boot-partition>/
+   cp kernel-build/output/dtb/bcm2712-rpi-5-b.dtb \
+      kernel-build/output/dtb/bcm2712d0-rpi-5-b.dtb <boot-partition>/
    ```
-### Verifying Installation
+3. Modules live on the ext4 root partition, which macOS can't mount. If the kernel
+   version changed, install the modules over SSH after booting (see Method 1).
 
-After reboot:
+### Verifying the Installation
+
+After the reboot:
 ```bash
 ssh pi@zaraos
-uname -a         # check kernel version
-lsmod            # check modules loaded
-dmesg | head -30 # watch boot log for errors
+uname -a          # should show the new version
+lsmod             # check that modules loaded
+dmesg | head -30  # look for errors early in boot
 ```
+
+If the Pi doesn't boot, put the SD card in your build machine and copy `Image.backup`
+(and the `.dtb.backup` files) back over the originals in the boot partition.
 
 ## Kernel Configuration
 
-### Pi 5 Fragment (`kernel-fragments/linux-pi5.fragment`)
+### Pi 5 Fragment (`ZaraOS/kernel-fragments/linux-pi5.fragment`)
 - 16K page size (Pi 5 optimization)
 - GPU: VC4/V3D DRM drivers
 - WiFi: Broadcom brcmfmac
 - I/O: GPIO, I2C, SPI, PWM, USB serial
 - Container support (namespaces, cgroups, overlay FS, seccomp)
 
-### Customizing Configuration
+### Customizing the Configuration
 
 ```bash
-# Launch menuconfig before building
-./build-kernel-local.sh --menuconfig
-
-# Your config is saved to output/kernel-config-<timestamp>
+./ZaraOS/scripts/build-kernel-local.sh --menuconfig
 ```
 ## Further Reading
 
 - [Buildroot Manual](https://buildroot.org/downloads/manual/manual.html)
 - [Raspberry Pi Kernel Build](https://www.raspberrypi.com/documentation/computers/linux_kernel.html)
-- [QEMU ARM Emulation](https://wiki.qemu.org/Documentation/Platforms/ARM)
 - [Linux Kernel Configuration](https://www.kernel.org/doc/html/latest/admin-guide/index.html)
-
-#todo check `ZaraOS/ZaraOS/KERNEL_BUILD.md`
-
-#todo future sections
-- Instructions for how to load onto the pi
-- Getting the pi connected to the Wi-Fi
-
