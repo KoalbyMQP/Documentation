@@ -87,7 +87,7 @@ Revoke a session by its token prefix.
 ### Identity
 
 #### `GET /identity`
-Get device identification information. Returns seeded defaults — not yet reading from real hardware.
+Get device identification information. Cortex doesn't read real hardware yet. Every field is a default set when Cortex starts, so the response always matches the example below. Only `location` can be changed (with `PUT /identity/location`), and it goes back to the default when Cortex restarts.
 
 **Response `200`:**
 ```json
@@ -114,12 +114,12 @@ Update the device's location.
 { "location": "warehouse-floor-5" }
 ```
 
-**Response `400`:** Location field missing.
+**Response `400`:** location missing or empty
 
 ---
 
 #### `GET /ssh`
-Get SSH connection details for the device. Currently returns hardcoded values — not yet reading from real network config.
+Get SSH connection details for the device. Cortex doesn't read the network configuration yet. `host`, `port`, `user`, and `hint` are hard-coded. Only `name` comes from the device identity.
 
 **Response `200`:**
 ```json
