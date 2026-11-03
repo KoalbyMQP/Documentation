@@ -57,6 +57,8 @@ nix develop                              # enter the dev shell
 ./ZaraOS/scripts/build-kernel-local.sh   # build for Pi 5 (the default target)
 ```
 
+You might be requested to select some settings for the build. Press enter (the default options) if asked.
+
 The first build takes about 10 to 15 minutes, including downloading the kernel source.
 Rebuilds are much faster because the source is reused and `ccache` caches compiled objects.
 
@@ -93,6 +95,8 @@ kernel-build/output/
 ├── build.log                   # Full compiler output
 └── zaraos-kernel-*.tar.gz      # Image + dtb/ + modules/, ready to deploy
 ```
+
+'*' for the zaraos kernel file should have the date when the build was run in the format YYYMMDD-HHMMSS like 20261103-114754
 
 ## Deploying to a Raspberry Pi 5
 
