@@ -6,7 +6,7 @@ sidebar_position: 2
 
 # Cortex API Reference
 
-#todo copied directly from `ZaraOS/cortex/README.md`. Could improve format and structure.
+Cortex is the on-device HTTP control plane for ZaraOS. This page lists the endpoints it exposes.
 
 ### Health
 
@@ -23,7 +23,7 @@ Returns server health status. No authentication required.
 ### Authentication
 
 #### `POST /auth/pair/start`
-Initiate device pairing. Generates a 6-digit code printed to the server terminal (never returned in the response). **Public.**
+Start pairing a client. Cortex prints a 6-digit code to the server terminal and never returns it in the response. The code expires after 120 seconds. Starting a new pairing replaces any code that is still pending. **Public.**
 
 **Response `200`:**
 ```json
@@ -33,24 +33,27 @@ Initiate device pairing. Generates a 6-digit code printed to the server terminal
 ---
 
 #### `POST /auth/pair/complete`
-Complete pairing by submitting the 6-digit code. Returns a salt used to derive the signing token client-side. **Public.**
+Finish pairing by sending the 6-digit code. The response contains a salt, which the client uses to derive its signing token. **Public.**
 
 **Request:**
 ```json
 { "code": "123456", "label": "my-client" }
 ```
 
+`label` is optional and defaults to `"Web Client"`.
+
 **Response `200`:**
 ```json
 { "salt": "<hex>", "label": "my-client", "created_at": "<RFC3339>" }
 ```
 
-**Response `401`:** Invalid or expired code.
+**Response `400`:** `code` is missing.
+**Response `401`:** The code is wrong or expired, or no pairing is pending.
 
 ---
 
 #### `GET /auth/sessions`
-List all active paired sessions.
+List all paired sessions. `token_prefix` is the first 6 hex characters of the session's token, so it's safe to display. Sessions are kept in memory and are lost when Cortex restarts.
 
 **Response `200`:**
 ```json
@@ -76,7 +79,8 @@ Revoke a session by its token prefix.
 { "revoked": true }
 ```
 
-**Response `404`:** Session not found.
+**Response `400`:** `token_prefix` is missing.
+**Response `404`:** No session has that prefix.
 
 ---
 
