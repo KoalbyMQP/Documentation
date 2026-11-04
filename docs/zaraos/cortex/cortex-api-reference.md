@@ -136,8 +136,12 @@ Get SSH connection details for the device. Cortex doesn't read the network confi
 
 ### Apps
 
+Cortex builds its list of apps from GitHub releases. It reads the releases of each repository listed in `GITHUB_REPOS` and skips drafts. To get an app's name, it takes the release title, removes the version tag, lowercases the rest, and turns spaces and underscores into hyphens. For example, `Python Example v0.0.1` becomes `python-example`.
+
+Release data is cached for 5 minutes, which you can change with `REGISTRY_CACHE_TTL`. If GitHub can't be reached, Cortex keeps serving the last list it cached.
+
 #### `GET /apps`
-List all available apps from the registry (GitHub releases).
+List all available apps from the registry. `latest_version` is the most recently published release. It's `""` if the app has no releases.
 
 **Response `200`:**
 ```json
@@ -151,7 +155,7 @@ List all available apps from the registry (GitHub releases).
 ---
 
 #### `GET /apps/{name}/versions`
-Get version history for a specific app.
+Get version history for a specific app. Versions are sorted by publish date, newest first. `changelog` is the body text of the release.
 
 **Response `200`:**
 ```json
