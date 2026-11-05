@@ -419,10 +419,6 @@ data: {"ts":"2026-04-12T14:30:20.000Z","message":"stream ended"}
 
 **Reconnection:** Store the `ts` from the last received `log` event. On reconnect, pass `?since=<ts>&stream=true` to resume from where you left off.
 
-:::caution
-Don't depend on the `Last-Event-ID` header to reconnect. Cortex reads it as a `since` value, but the SSE `id` it sends is the `seq` number, not a timestamp. A browser `EventSource` that reconnects on its own sends that number, so the stream won't pick up in the right place. Pass `since` yourself instead.
-:::
-
 **Response `404`:** Instance not found.
 **Response `500`:** Fetching the logs failed (non-streaming only).
 
@@ -471,10 +467,10 @@ Get CPU, memory, and uptime metrics for an instance, read with the container CLI
 
 ### Diagnostics
 
-> Diagnostic tests currently return seeded/mock results — not yet running real hardware checks.
+> Diagnostic tests currently return seeded/mock results — not yet running real hardware checks. Every test returns the same result each time: `camera-check` always fails and the other three always pass.
 
 #### `GET /diagnostics`
-Run all diagnostic tests and return aggregated results.
+Run all diagnostic tests and return aggregated results. Even though this is a `GET`, it changes state: it saves each test's result (see `GET /diagnostics/{test}`) and adds a `diagnostic_run` event to the event log.
 
 **Response `200`:**
 ```json
@@ -490,12 +486,14 @@ Run all diagnostic tests and return aggregated results.
 ```
 
 **Built-in tests:**
-| Test | Description | Duration |
-|------|-------------|----------|
-| `lidar-ping` | LIDAR sensor responsiveness | ~320ms |
-| `camera-check` | Camera device detection | ~50ms |
-| `network-reachability` | Gateway connectivity | ~80ms |
-| `disk-space` | Disk usage check | ~10ms |
+| Test | Description | `duration_ms` | Mock result |
+|------|-------------|---------------|-------------|
+| `lidar-ping` | LIDAR sensor responsiveness | `320` | Pass |
+| `camera-check` | Camera device detection | `50` | Fail |
+| `network-reachability` | Gateway connectivity | `80` | Pass |
+| `disk-space` | Disk usage check | `10` | Pass |
+
+The durations are fixed values, not measured times.
 
 ---
 
@@ -519,7 +517,7 @@ Get historical diagnostic run summaries. Currently returns generated mock data (
 ---
 
 #### `GET /diagnostics/{test}`
-Get the last result for a specific diagnostic test.
+Get the last result for a specific diagnostic test without running it again. If the test hasn't been run since Cortex started, this returns a seeded result whose `ran_at` is 5 minutes before startup.
 
 **Response `200`:**
 ```json
@@ -531,7 +529,7 @@ Get the last result for a specific diagnostic test.
 ---
 
 #### `POST /diagnostics/{test}/run`
-Run a specific diagnostic test on demand.
+Run a specific diagnostic test on demand and save its result. Unlike `GET /diagnostics`, this doesn't add an event to the event log.
 
 **Response `200`:**
 ```json
