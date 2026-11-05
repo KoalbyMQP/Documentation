@@ -4,9 +4,22 @@ sidebar_label: Crab API Overview
 sidebar_position: 1
 ---
 
-**Crab API** is a Python library that can run on the Raspberry Pi. The API allows for communication with the **Urchin firmware** on the ESP32 over USB serial.
+
+
+# Crab API Overview
+
+**Crab API** is a high-level Python API that coordinates communication with the **Urchin
+Firmware** on the ESP-32 over USB serial. 
+
+
+
+
 
 ## Files
+
+Crab API source code lives under the `Crab_API` directory inside the
+[Urchin-Framework](https://github.com/KoalbyMQP/Urchin-Framework/)
+repository.
 
 | Crab_API/src |
 | ------------ |
