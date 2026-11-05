@@ -173,12 +173,12 @@ Get version history for a specific app. Versions are sorted by publish date, new
 
 ### Images (Local Registry)
 
-Endpoints for inspecting and managing container images stored locally on the device. These reflect what has been pulled or built via nerdctl/containerd — not what is available upstream.
+Endpoints for inspecting and managing container images stored locally on the device. The data comes straight from the container CLI (`docker` if it's installed, otherwise `nerdctl`). It shows what has been pulled or built on the device, not what is available upstream.
 
-> Repository names contain slashes (e.g. `docker.io/koalbymqp/ros2-nav`). In URL path segments, **replace slashes with underscores**: `docker.io_koalbymqp_ros2-nav`.
+> Repository names contain slashes (e.g. `docker.io/koalbymqp/ros2-nav`). In URL path segments, **replace slashes with underscores**: `docker.io_koalbymqp_ros2-nav`. Cortex turns **every** underscore back into a slash, so these endpoints can't reach a repository whose name contains an underscore.
 
 #### `GET /images`
-List all locally available container images, grouped by repository.
+List all locally available container images, grouped by repository. Untagged (`<none>`) images are left out.
 
 **Response `200`:**
 ```json
@@ -194,6 +194,8 @@ List all locally available container images, grouped by repository.
   ]
 }
 ```
+
+**Response `500`:** The container CLI failed.
 
 ---
 
@@ -211,6 +213,7 @@ List all tags for a specific image repository. Use underscores in place of slash
 ```
 
 **Response `404`:** No tags found for the image.
+**Response `500`:** The container CLI failed.
 
 ---
 
@@ -234,7 +237,7 @@ Remove a local image. Use underscores in place of slashes in `{name}`.
 ```
 
 **Response `404`:** Image not found.
-**Response `409`:** Image is in use by a running container (use `?force=true` to override).
+**Response `409`:** Removal failed for any reason other than a missing image. Usually this means a container is using the image (use `?force=true` to override).
 
 ---
 
