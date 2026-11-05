@@ -243,8 +243,12 @@ Remove a local image. Use underscores in place of slashes in `{name}`.
 
 ### Instances
 
+An instance is one run of an app's container. Its ID is `<app>-<version>-<unix seconds>`, and the container has the same name. An instance's state is one of `starting`, `running`, `stopping`, `stopped`, or `crashed`.
+
+Every 10 seconds, Cortex checks each `running` instance against the container runtime. If the container has exited, Cortex marks the instance `stopped`. If the container no longer exists, it marks the instance `crashed`.
+
 #### `GET /instances`
-List all container instances.
+List every instance this Cortex process knows about, including stopped ones.
 
 **Response `200`:**
 ```json
@@ -256,7 +260,7 @@ List all container instances.
       "version": "v1.2.3",
       "image": "docker.io/koalbymqp/ros2-nav:v1.2.3",
       "state": "running",
-      "error": null,
+      "error": "",
       "started_at": "<RFC3339>",
       "stopped_at": null
     }
@@ -267,7 +271,7 @@ List all container instances.
 ---
 
 #### `GET /instances/{id}`
-Get detailed information for a specific instance. Includes `container_id` and `exit_code` beyond what the list endpoint returns.
+Get detailed information for a specific instance. Includes `container_id` and `exit_code` beyond what the list endpoint returns. `exit_code` is `null` while the instance is running.
 
 **Response `200`:** Full instance object.
 
@@ -276,23 +280,47 @@ Get detailed information for a specific instance. Includes `container_id` and `e
 ---
 
 #### `POST /instances`
-Start a new container instance. The `app` field is required. If `version` is omitted or `"latest"`, the newest version from the registry is used. Optionally override the `image`.
+Start a new container instance.
 
 **Request:**
 ```json
-{ "app": "ros2-nav", "version": "latest", "image": "<optional-override>" }
+{
+  "app": "ros2-nav",
+  "version": "latest",
+  "image": "",
+  "privileged": false,
+  "devices": ["/dev/ttyUSB0"],
+  "volumes": ["/data/maps:/maps"],
+  "env": { "LOG_LEVEL": "debug" }
+}
 ```
 
-**Response `201`:** Instance summary. Container is started synchronously via nerdctl — response reflects the final state (`"running"` on success, `"crashed"` on failure).
+| Field | Required | Description |
+|-------|----------|-------------|
+| `app` | Yes | App name |
+| `version` | No | A version from the registry. If you leave it out or set it to `"latest"`, Cortex uses the newest version. |
+| `image` | No | A full image reference to run directly. Cortex skips the registry, so `app` doesn't have to be in it, and `version` defaults to `dev`. |
+| `privileged` | No | Run the container with `--privileged` |
+| `devices` | No | Each entry is passed as `--device` |
+| `volumes` | No | Each entry is passed as `-v` |
+| `env` | No | Each pair is passed as `-e KEY=VALUE` |
+
+If the app is a package in the requirements manifest, the package's `privileged`, `devices`, `volumes`, and `env` settings are applied first. The request's values are then merged on top of them:
+
+- `devices` and `volumes` are added to the package's lists.
+- `env` keys in the request replace the package's values.
+- `privileged: true` turns on privileged mode. `false` doesn't turn it off.
+
+**Response `201`:** Instance summary. Cortex starts the container with the container CLI before it responds, so the response shows the final state: `"running"` on success or `"crashed"` on failure. A container that fails to start still returns `201`, so check `state` and `error`.
 
 **Response `400`:** Missing `app` field.
-**Response `404`:** App or version not found.
-**Response `409`:** Instance already running for this app.
+**Response `404`:** App or version not found (only when `image` isn't set).
+**Response `409`:** An instance of this app is already `starting` or `running`.
 
 ---
 
 #### `DELETE /instances/{id}`
-Stop a running container instance.
+Stop a running container instance. Cortex stops the container and then removes it.
 
 **Response `200`:**
 ```json
@@ -304,16 +332,18 @@ Stop a running container instance.
 ---
 
 #### `POST /instances/{id}/restart`
-Restart an instance (stops old, starts new with same version).
+Restart an instance. Cortex stops the old instance and starts a new one with the same image and version. The new instance has a new ID, so use `new_id` for later requests.
 
-**Response `201`:**
+The new container gets the package's run options from the requirements manifest. Options passed in the original `POST /instances` request (`privileged`, `devices`, `volumes`, `env`) are not reused.
+
+**Response `201`:** Cortex starts the new container before it responds, so `state` is `"running"` on success or `"crashed"` on failure.
 ```json
 {
-  "old_id": "...",
-  "new_id": "...",
+  "old_id": "ros2-nav-v1.2.3-1700000000",
+  "new_id": "ros2-nav-v1.2.3-1700000300",
   "app": "ros2-nav",
   "version": "v1.2.3",
-  "state": "starting",
+  "state": "running",
   "started_at": "<RFC3339>"
 }
 ```
@@ -323,21 +353,26 @@ Restart an instance (stops old, starts new with same version).
 ---
 
 #### `POST /instances/{id}/update`
-Update an instance to the latest available version. If already on the latest, returns `200` with no changes.
+Update an instance to the latest version in the registry. Cortex stops the old instance and starts a new one, which has a new ID. Like restart, the new container uses the package's run options from the requirements manifest, not options passed in the original `POST /instances` request.
 
-**Response `201`:**
+**Response `201`:** The instance was updated. `state` is `"running"` on success or `"crashed"` on failure.
 ```json
 {
-  "old_id": "...",
+  "old_id": "ros2-nav-v1.2.2-1700000000",
   "old_version": "v1.2.2",
-  "new_id": "...",
+  "new_id": "ros2-nav-v1.2.3-1700000300",
   "new_version": "v1.2.3",
-  "state": "starting",
+  "state": "running",
   "started_at": "<RFC3339>"
 }
 ```
 
-**Response `404`:** Instance not found.
+**Response `200`:** The instance is already on the latest version. Nothing changes.
+```json
+{ "message": "already running latest version v1.2.3" }
+```
+
+**Response `404`:** Instance not found, or the app has no versions in the registry.
 
 ---
 
@@ -347,13 +382,13 @@ Fetch container logs. Supports one-shot and streaming modes.
 **Query Parameters:**
 | Param | Default | Description |
 |-------|---------|-------------|
-| `tail` | `100` | Number of log lines to return |
+| `tail` | `100` | Number of log lines to return. Still applies when `since` is set. |
 | `stream` | `false` | Set to `true` for Server-Sent Events streaming |
 | `since` | — | RFC3339 timestamp; only return logs after this time |
 
 **Response `200` (non-streaming):** Plain text log output.
 
-**Response `200` (streaming):** SSE stream with structured events. Stays open until the client disconnects or the container exits. The `Last-Event-ID` request header is also respected for reconnection (treated as a `since` value).
+**Response `200` (streaming):** SSE stream with structured events. Stays open until the client disconnects or the container exits.
 
 **SSE Event Types:**
 
@@ -366,7 +401,7 @@ data: {"ts":"2026-04-12T14:30:05.123Z","seq":42,"stream":"stdout","content":"Nav
 | Field | Type | Description |
 |-------|------|-------------|
 | `ts` | string (RFC3339Nano) | Timestamp from the container runtime |
-| `seq` | int | Monotonically incrementing sequence number |
+| `seq` | int | Sequence number. Starts at 1 and counts up on each connection. |
 | `stream` | string | `"stdout"` or `"stderr"` |
 | `content` | string | The log line text |
 
@@ -376,7 +411,7 @@ event: heartbeat
 data: {"ts":"2026-04-12T14:30:15.000Z"}
 ```
 
-**`error`** — terminal event (e.g. stream ended):
+**`error`** — always the last event. Sent when the stream ends or when the log process can't be started:
 ```
 event: error
 data: {"ts":"2026-04-12T14:30:20.000Z","message":"stream ended"}
@@ -384,38 +419,50 @@ data: {"ts":"2026-04-12T14:30:20.000Z","message":"stream ended"}
 
 **Reconnection:** Store the `ts` from the last received `log` event. On reconnect, pass `?since=<ts>&stream=true` to resume from where you left off.
 
+:::caution
+Don't depend on the `Last-Event-ID` header to reconnect. Cortex reads it as a `since` value, but the SSE `id` it sends is the `seq` number, not a timestamp. A browser `EventSource` that reconnects on its own sends that number, so the stream won't pick up in the right place. Pass `since` yourself instead.
+:::
+
 **Response `404`:** Instance not found.
+**Response `500`:** Fetching the logs failed (non-streaming only).
 
 ---
 
 #### `GET /instances/{id}/health`
-Health check for a specific instance. Checks if the container is running via nerdctl.
+Health check for a specific instance. Asks the container CLI whether the instance's container is running.
 
-**Response `200`:**
+**Response `200`:** Always returned for an instance that exists, so check `healthy` for the result.
 ```json
 {
-  "id": "...",
+  "id": "ros2-nav-v1.2.3-1700000000",
   "healthy": true,
   "last_checked": "<RFC3339>",
   "output": "OK"
 }
 ```
 
+When `healthy` is `false`, `output` gives the reason. It's the container CLI's error if the check failed, or otherwise a message like `instance is stopped`.
+
 **Response `404`:** Instance not found.
 
 ---
 
 #### `GET /instances/{id}/metrics`
-Get CPU, memory, and uptime metrics for an instance via nerdctl stats.
+Get CPU, memory, and uptime metrics for an instance, read with the container CLI's `stats` command.
 
 **Response `200`:**
 ```json
 {
-  "id": "...",
+  "id": "ros2-nav-v1.2.3-1700000000",
   "cpu_percent": 0.42,
   "memory_mb": 84.5,
   "uptime_seconds": 3600
 }
+```
+
+`uptime_seconds` is `0` once the instance has stopped. If the `stats` command fails, the response is still `200`, but it has an `error` field in place of `cpu_percent` and `memory_mb`:
+```json
+{ "id": "ros2-nav-v1.2.3-1700000000", "uptime_seconds": 0, "error": "<CLI error>" }
 ```
 
 **Response `404`:** Instance not found.
