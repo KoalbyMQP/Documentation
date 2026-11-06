@@ -658,8 +658,10 @@ The response holds the **newest** events that match, up to `limit`, sorted oldes
 
 ### Shell (WebSocket)
 
+Opening a shell takes two steps: get a ticket with a signed request, then use the ticket to open the WebSocket. Browsers can't add custom headers to a WebSocket handshake, so the ticket takes the place of the signature headers.
+
 #### `POST /shell/ticket`
-Issue a one-time ticket for WebSocket shell access. Ticket expires after 30 seconds.
+Issue a one-time ticket for WebSocket shell access. Ticket expires after 30 seconds. It's used up by the first `GET /shell` that presents it, even if that connection then fails, so get a new ticket for every connection.
 
 **Response `200`:**
 ```json
@@ -674,9 +676,11 @@ Upgrade to a WebSocket connection for an interactive shell session. **Public** (
 **WebSocket Protocol:**
 - **Binary frames (server → client):** PTY output
 - **Binary frames (client → server):** Keyboard input (written to PTY)
-- **Text frames (client → server):** Control messages only — `{"type": "resize", "cols": 120, "rows": 40}`
+- **Text frames (client → server):** Control messages only — `{"type": "resize", "cols": 120, "rows": 40}`. Any other text frame is ignored and isn't passed to the shell, so keyboard input must be sent as binary frames.
 
-Connection stays open until the client disconnects or the shell process exits.
+Connection stays open until the client disconnects or the shell process exits. If the shell can't be started, Cortex sends one text frame with the error and closes the connection.
+
+**Response `401`:** The ticket is missing, unknown, already used, or expired. The body is plain text, not JSON.
 
 ---
 
