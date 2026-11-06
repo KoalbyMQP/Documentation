@@ -542,7 +542,7 @@ Run a specific diagnostic test on demand and save its result. Unlike `GET /diagn
 
 ### ROS Integration
 
-> ROS endpoints currently return mock/seeded data.
+> ROS endpoints currently return mock/seeded data. None of them connect to ROS 2 yet. Every response comes from the same fixed example graph, with the nodes `/navigation`, `/lidar_driver`, and `/camera`.
 
 #### `GET /ros/nodes`
 List active ROS 2 nodes.
@@ -573,7 +573,9 @@ List ROS 2 topics with type and subscriber info.
 ---
 
 #### `GET /ros/topic/{name}/echo`
-Echo recent messages from a ROS topic. Use underscores in place of slashes for nested topic names.
+Echo recent messages from a ROS topic. Pass the topic name without its leading slash. Cortex adds the slash back, so `GET /ros/topic/cmd_vel/echo` echoes `/cmd_vel`.
+
+Underscores are **not** turned into slashes, and `{name}` can't contain a slash, so this endpoint can't reach nested topics like `/sensors/scan`. In the mock data, `type` is always `geometry_msgs/msg/Twist` and `messages` is always empty, whatever the topic.
 
 **Response `200`:**
 ```json
@@ -602,7 +604,7 @@ Get the ROS node-topic graph showing connections between nodes.
 **Response `200`:**
 ```json
 {
-  "nodes": ["..."],
+  "nodes": ["/navigation", "/lidar_driver", "/camera"],
   "edges": [
     { "from": "/lidar_driver", "to": "/navigation", "topic": "/scan" }
   ]
