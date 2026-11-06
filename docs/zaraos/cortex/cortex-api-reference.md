@@ -616,14 +616,16 @@ Get the ROS node-topic graph showing connections between nodes.
 ### Events
 
 #### `GET /events`
-Query the event log with optional filtering. Events are retained in-memory (last 500).
+Query the event log with optional filtering. Events are retained in-memory (last 500) and are cleared when Cortex restarts.
+
+The response holds the **newest** events that match, up to `limit`, sorted oldest to newest.
 
 **Query Parameters:**
 | Param | Default | Description |
 |-------|---------|-------------|
-| `since` | — | RFC3339 timestamp; return events after this time |
+| `since` | — | RFC3339 timestamp; return only events strictly after this time. An invalid value is ignored instead of rejected. |
 | `type` | — | Filter by event type |
-| `limit` | `50` | Max events to return |
+| `limit` | `50` | Max events to return. A value that isn't a positive number falls back to `50`. |
 
 **Response `200`:**
 ```json
@@ -634,7 +636,23 @@ Query the event log with optional filtering. Events are retained in-memory (last
 }
 ```
 
-**Event types:** `auth_paired`, `auth_revoked`, `instance_started`, `instance_start_failed`, `instance_stopped`, `image_deleted`, `diagnostic_run`
+**Event types:**
+| Type | Emitted when |
+|------|--------------|
+| `auth_paired` | A client finishes pairing |
+| `auth_revoked` | A session is revoked |
+| `instance_started` | An instance is started, restarted, or updated |
+| `instance_start_failed` | A container fails to start |
+| `instance_stopped` | An instance is stopped |
+| `instance_reconciled` | The 10-second background check changes an instance's state |
+| `image_deleted` | A local image is removed |
+| `diagnostic_run` | `GET /diagnostics` runs all tests (running a single test doesn't emit one) |
+| `manifest_updated` | The requirements manifest is replaced |
+| `package_discovered` | A package is added to the requirements manifest from an image |
+| `package_deleted` | A package is removed from the requirements manifest |
+| `requirement_started` | The requirements bootloader starts a package |
+| `requirement_start_failed` | The requirements bootloader fails to start a package |
+| `requirement_updated` | A package is updated to a newer version through the requirements system |
 
 ---
 
