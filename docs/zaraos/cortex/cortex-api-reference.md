@@ -686,70 +686,87 @@ Connection stays open until the client disconnects or the shell process exits. I
 
 ## Data Models
 
+In these tables, `time` means an RFC3339 timestamp string.
+
 ### Instance
-```
-id             string    — Unique ID (app-version-timestamp)
-app            string    — App name
-version        string    — Semantic version
-image          string    — Full container image reference
-container_id   string    — nerdctl container name
-state          string    — starting | running | stopping | stopped | crashed
-error          string    — Failure message (if any)
-started_at     time      — When the instance was created
-stopped_at     time?     — When the instance was stopped
-pid            int?      — OS process ID
-exit_code      int?      — Process exit code
-```
+
+Returned by the instance endpoints.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique ID, `<app>-<version>-<unix seconds>` |
+| `app` | string | App name |
+| `version` | string | Release tag, or `dev` when the instance was started from an `image` override |
+| `image` | string | Full container image reference |
+| `container_id` | string | Container name, the same as `id`. Only returned by `GET /instances/{id}`. |
+| `state` | string | `starting`, `running`, `stopping`, `stopped`, or `crashed` |
+| `error` | string | Failure message, or `""` if there is none |
+| `started_at` | time | When the instance was created |
+| `stopped_at` | time or `null` | When the instance stopped. `null` while it's running. |
+| `exit_code` | int or `null` | Exit code. `null` while it's running. Only returned by `GET /instances/{id}`. |
 
 ### Event
-```
-id             string           — Sequential event ID (evt_XXXX)
-type           string           — Event type name
-timestamp      time             — When the event occurred
-data           map[string]any   — Arbitrary event payload
-```
+
+Returned by `GET /events`.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Sequential event ID (`evt_0001`, `evt_0002`, …) |
+| `type` | string | Event type. See the event types table under `GET /events`. |
+| `timestamp` | time | When the event occurred |
+| `data` | object | Event details. The fields depend on the event type. |
 
 ### DiagResult
-```
-name           string    — Test name
-passed         bool      — Whether the test passed
-output         string    — Human-readable output
-duration_ms    int       — Execution time in milliseconds
-ran_at         time      — When the test was run
-```
+
+Returned by the diagnostics endpoints.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Test name |
+| `passed` | bool | Whether the test passed |
+| `output` | string | Human-readable output |
+| `duration_ms` | int | Execution time in milliseconds |
+| `ran_at` | time | When the test was run |
 
 ### Identity
-```
-name              string — Device name
-serial            string — Hardware serial number
-location          string — Physical location
-firmware_version  string — Current firmware version
-```
+
+Returned by `GET /identity`.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Device name |
+| `serial` | string | Hardware serial number |
+| `location` | string | Physical location |
+| `firmware_version` | string | Current firmware version |
 
 ### LocalImage
-```
-repository     string     — Image repository name (e.g. docker.io/koalbymqp/ros2-nav)
-tags           []string   — All tags present locally
-id             string     — Image digest / ID
-size           string     — Human-readable image size
-created_at     string     — When the image was created
-```
+
+Returned by `GET /images`.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `repository` | string | Image repository name (e.g. `docker.io/koalbymqp/ros2-nav`) |
+| `tags` | string[] | All tags present locally |
+| `id` | string | Image ID |
+| `size` | string | Human-readable image size, as the container CLI reports it |
+| `created_at` | string | When the image was created, as the container CLI formats it (not RFC3339) |
 
 ### App (Registry)
-```
-name           string    — App name
-repo           string    — Source GitHub repository
-versions       []Version — Version history (newest first)
-```
+
+Returned by `GET /apps`. To get an app's version list, call `GET /apps/{name}/versions`.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | App name, derived from the release title |
+| `repo` | string | GitHub repository the releases come from |
+| `latest_version` | string | Most recently published release tag, or `""` if there are no releases |
 
 ### Version
-```
-version        string — Semantic version tag
-published_at   time   — Release date
-changelog      string — Release notes
-```
 
----
+Returned in the `versions` list of `GET /apps/{name}/versions`, newest first.
 
-
-
+| Field | Type | Description |
+|-------|------|-------------|
+| `version` | string | Release tag |
+| `published_at` | time | When the release was published |
+| `changelog` | string | Release notes (the release body) |
